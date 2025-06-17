@@ -92,6 +92,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
 
         ApiResponse<Void> apiResponse = ApiResponse.error(errorCode.getMessage());
         objectMapper.writeValue(response.getWriter(), apiResponse);
