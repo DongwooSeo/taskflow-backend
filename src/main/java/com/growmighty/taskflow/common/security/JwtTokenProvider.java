@@ -1,4 +1,4 @@
-package com.growmighty.taskflow.common.filter;
+package com.growmighty.taskflow.common.security;
 
 import com.growmighty.taskflow.common.exception.BusinessException;
 import com.growmighty.taskflow.common.exception.ErrorCode;

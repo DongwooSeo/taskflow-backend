@@ -2,7 +2,7 @@ package com.growmighty.taskflow.domain.auth.service;
 
 import com.growmighty.taskflow.common.exception.BusinessException;
 import com.growmighty.taskflow.common.exception.ErrorCode;
-import com.growmighty.taskflow.common.filter.JwtTokenProvider;
+import com.growmighty.taskflow.common.security.JwtTokenProvider;
 import com.growmighty.taskflow.common.util.PasswordEncoder;
 import com.growmighty.taskflow.domain.auth.dto.AuthResponse;
 import com.growmighty.taskflow.domain.auth.dto.SignInRequest;

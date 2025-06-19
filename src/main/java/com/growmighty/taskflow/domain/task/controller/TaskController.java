@@ -1,6 +1,7 @@
 package com.growmighty.taskflow.domain.task.controller;
 
 import com.growmighty.taskflow.common.dto.ApiResponse;
+import com.growmighty.taskflow.domain.auth.entity.User;
 import com.growmighty.taskflow.domain.task.dto.TaskRequest;
 import com.growmighty.taskflow.domain.task.dto.TaskResponse;
 import com.growmighty.taskflow.domain.task.dto.TaskStatusRequest;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,10 +28,10 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<ApiResponse<TaskResponse>> createTask(
             @Valid @RequestBody TaskRequest request,
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
         log.debug("Task 생성 요청: title={}, assigneeId={}", request.getTitle(), request.getAssigneeId());
-        TaskResponse response = taskService.createTask(request, userId);
+        TaskResponse response = taskService.createTask(request, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Task가 생성되었습니다.", response));
     }
@@ -40,7 +42,7 @@ public class TaskController {
             @RequestParam(required = false) Long assigneeId,
             @RequestParam(required = false) String search,
             Pageable pageable,
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
         log.debug("Task 목록 조회 요청: status={}, assigneeId={}, search={}", status, assigneeId, search);
         Page<TaskResponse> response = taskService.getTasks(status, assigneeId, search, pageable);
@@ -50,7 +52,7 @@ public class TaskController {
     @GetMapping("/{taskId}")
     public ResponseEntity<ApiResponse<TaskResponse>> getTask(
             @PathVariable Long taskId,
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
         log.debug("Task 상세 조회 요청: taskId={}", taskId);
         TaskResponse response = taskService.getTask(taskId);
@@ -61,20 +63,20 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
             @PathVariable Long taskId,
             @Valid @RequestBody TaskRequest request,
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
         log.debug("Task 수정 요청: taskId={}, title={}", taskId, request.getTitle());
-        TaskResponse response = taskService.updateTask(taskId, request, userId);
+        TaskResponse response = taskService.updateTask(taskId, request, user.getId());
         return ResponseEntity.ok(ApiResponse.success("Task가 수정되었습니다.", response));
     }
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<ApiResponse<Void>> deleteTask(
             @PathVariable Long taskId,
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
         log.debug("Task 삭제 요청: taskId={}", taskId);
-        taskService.deleteTask(taskId, userId);
+        taskService.deleteTask(taskId, user.getId());
         return ResponseEntity.ok(ApiResponse.success("Task가 삭제되었습니다.", null));
     }
 
@@ -82,10 +84,9 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskResponse>> updateTaskStatus(
             @PathVariable Long taskId,
             @Valid @RequestBody TaskStatusRequest request,
-            @RequestAttribute Long userId) {
-        
+            @AuthenticationPrincipal User user
+    ) {
         TaskResponse updatedTask = taskService.updateTaskStatus(taskId, request);
-        
         return ResponseEntity.ok(ApiResponse.success("작업 상태가 업데이트되었습니다.", updatedTask));
     }
 } 

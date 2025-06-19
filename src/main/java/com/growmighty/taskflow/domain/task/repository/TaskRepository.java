@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
-
+    
     @Query("SELECT DISTINCT t FROM Task t " +
             "LEFT JOIN FETCH t.assignee " +
             "LEFT JOIN FETCH t.creator " +

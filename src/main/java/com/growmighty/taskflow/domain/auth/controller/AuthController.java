@@ -5,12 +5,17 @@ import com.growmighty.taskflow.domain.auth.dto.AuthResponse;
 import com.growmighty.taskflow.domain.auth.dto.SignInRequest;
 import com.growmighty.taskflow.domain.auth.dto.SignUpRequest;
 import com.growmighty.taskflow.domain.auth.dto.WithdrawRequest;
+import com.growmighty.taskflow.domain.auth.entity.User;
 import com.growmighty.taskflow.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -41,9 +46,9 @@ public class AuthController {
     @PostMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
             @RequestBody WithdrawRequest request,
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
-        authService.withdraw(request, userId);
+        authService.withdraw(request, user.getId());
         return ResponseEntity.ok(ApiResponse.success("회원탈퇴가 완료되었습니다.", null));
     }
 } 

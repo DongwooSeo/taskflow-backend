@@ -5,10 +5,12 @@ import com.growmighty.taskflow.common.exception.BusinessException;
 import com.growmighty.taskflow.common.exception.ErrorCode;
 import com.growmighty.taskflow.common.util.ResponseUtil;
 import com.growmighty.taskflow.domain.auth.dto.UserResponse;
+import com.growmighty.taskflow.domain.auth.entity.User;
 import com.growmighty.taskflow.domain.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,18 +25,19 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
-            @RequestAttribute Long userId
+            @AuthenticationPrincipal User user
     ) {
         log.debug("getCurrentUser called");
-        UserResponse user = userService.getCurrentUser(userId);
-        log.debug("getCurrentUser returning user response: {}", user);
-        return ResponseUtil.ok(user);
+        UserResponse response = userService.getCurrentUser(user.getId());
+        log.debug("getCurrentUser returning user response: {}", response);
+        return ResponseUtil.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
-//        String userRole = (String) request.getAttribute("userRole");
-//        if (!"ADMIN".equals(userRole)) {
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers(
+            @AuthenticationPrincipal User user
+    ) {
+//        if (!user.getRole().name().equals("ADMIN")) {
 //            throw new BusinessException(ErrorCode.FORBIDDEN);
 //        }
         List<UserResponse> users = userService.getAllUsers();
@@ -45,14 +48,13 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
             @PathVariable Long id,
             @RequestBody UserResponse request,
-            @RequestAttribute Long userId,
-            @RequestAttribute String userRole
+            @AuthenticationPrincipal User user
     ) {
-        if (!userId.equals(id) && !"ADMIN".equals(userRole)) {
+        if (!user.getId().equals(id) && !user.getRole().name().equals("ADMIN")) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
         
-        UserResponse updatedUser = userService.updateUser(id, request, userId);
+        UserResponse updatedUser = userService.updateUser(id, request, user.getId());
         return ResponseUtil.ok(updatedUser);
     }
 } 
