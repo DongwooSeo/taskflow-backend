@@ -1,14 +1,11 @@
 package com.growmighty.taskflow.domain.auth.controller;
 
 import com.growmighty.taskflow.common.dto.ApiResponse;
-import com.growmighty.taskflow.common.exception.BusinessException;
-import com.growmighty.taskflow.common.exception.ErrorCode;
 import com.growmighty.taskflow.domain.auth.dto.AuthResponse;
 import com.growmighty.taskflow.domain.auth.dto.SignInRequest;
 import com.growmighty.taskflow.domain.auth.dto.SignUpRequest;
 import com.growmighty.taskflow.domain.auth.dto.WithdrawRequest;
 import com.growmighty.taskflow.domain.auth.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,13 +41,8 @@ public class AuthController {
     @PostMapping("/withdraw")
     public ResponseEntity<ApiResponse<Void>> withdraw(
             @RequestBody WithdrawRequest request,
-            HttpServletRequest servletRequest
+            @RequestAttribute Long userId
     ) {
-        Long userId = (Long) servletRequest.getAttribute("userId");
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        
         authService.withdraw(request, userId);
         return ResponseEntity.ok(ApiResponse.success("회원탈퇴가 완료되었습니다.", null));
     }

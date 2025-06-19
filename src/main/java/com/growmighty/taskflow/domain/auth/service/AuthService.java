@@ -75,7 +75,7 @@ public class AuthService {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
 
-        userRepository.delete(user);
+        user.delete();
         log.debug("회원 탈퇴 완료: {}", user.getUsername());
     }
 } 

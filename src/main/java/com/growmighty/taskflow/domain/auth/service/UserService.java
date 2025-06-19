@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,23 +20,27 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public UserResponse getCurrentUser(Long userId) {
-        User user = userRepository.findById(userId)
+    public User getUserById(Long userId) {
+        return userRepository.findByIdAndDeletedFalse(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUser(Long userId) {
+        User user = getUserById(userId);
         return UserResponse.from(user);
     }
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAllActive().stream()
                 .map(UserResponse::from)
                 .toList();
     }
 
     @Transactional
     public UserResponse updateUser(Long id, UserResponse request, Long currentUserId) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = getUserById(id);
 
         if (!user.getId().equals(currentUserId)) {
             throw new BusinessException(ErrorCode.FORBIDDEN);

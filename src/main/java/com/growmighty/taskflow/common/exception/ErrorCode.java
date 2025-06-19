@@ -30,7 +30,11 @@ public enum ErrorCode {
     
     // Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다"),
-    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP Method입니다");
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP Method입니다"),
+
+    // Task
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "Task not found"),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Comment not found");
 
     private final HttpStatus status;
     private final String message;
