@@ -1,6 +1,8 @@
 package com.growmighty.taskflow.domain.auth.controller;
 
 import com.growmighty.taskflow.common.dto.ApiResponse;
+import com.growmighty.taskflow.domain.activity.ActivityType;
+import com.growmighty.taskflow.domain.activity.aspect.LogActivity;
 import com.growmighty.taskflow.domain.auth.dto.AuthResponse;
 import com.growmighty.taskflow.domain.auth.dto.SignInRequest;
 import com.growmighty.taskflow.domain.auth.dto.SignUpRequest;
@@ -34,6 +36,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다.", response));
     }
 
+    @LogActivity(type = ActivityType.USER_LOGGED_IN, targetIdExpression = "#result.body.data.id")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody SignInRequest request

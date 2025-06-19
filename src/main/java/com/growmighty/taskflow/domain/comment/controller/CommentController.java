@@ -1,6 +1,8 @@
 package com.growmighty.taskflow.domain.comment.controller;
 
 import com.growmighty.taskflow.common.dto.ApiResponse;
+import com.growmighty.taskflow.domain.activity.ActivityType;
+import com.growmighty.taskflow.domain.activity.aspect.LogActivity;
 import com.growmighty.taskflow.domain.auth.entity.User;
 import com.growmighty.taskflow.domain.comment.dto.CommentRequest;
 import com.growmighty.taskflow.domain.comment.dto.CommentResponse;
@@ -23,6 +25,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    @LogActivity(type = ActivityType.COMMENT_CREATED, targetIdExpression = "#result.body.data.id")
     @PostMapping
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @PathVariable Long taskId,
@@ -46,6 +49,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success("댓글 목록을 조회했습니다.", response));
     }
 
+    @LogActivity(type = ActivityType.COMMENT_UPDATED, targetIdExpression = "#result.body.data.id")
     @PutMapping("/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable Long taskId,
@@ -58,14 +62,15 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success("댓글이 수정되었습니다.", response));
     }
 
+    @LogActivity(type = ActivityType.COMMENT_DELETED, targetIdExpression = "#result.body.data")
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<Void>> deleteComment(
+    public ResponseEntity<ApiResponse<Long>> deleteComment(
             @PathVariable Long taskId,
             @PathVariable Long commentId,
             @AuthenticationPrincipal User user
     ) {
         log.debug("댓글 삭제 요청: taskId={}, commentId={}", taskId, commentId);
         commentService.deleteComment(taskId, commentId, user.getId());
-        return ResponseEntity.ok(ApiResponse.success("댓글이 삭제되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("댓글이 삭제되었습니다.", commentId));
     }
 } 

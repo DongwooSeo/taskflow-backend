@@ -63,7 +63,7 @@ public class AuthService {
         String token = tokenProvider.generateToken(user.getId());
         log.debug("로그인 성공: {}", user.getUsername());
         
-        return AuthResponse.withToken(token);
+        return AuthResponse.fromUserWithToken(user, token);
     }
 
     @Transactional

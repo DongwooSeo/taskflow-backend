@@ -1,6 +1,8 @@
 package com.growmighty.taskflow.domain.task.controller;
 
 import com.growmighty.taskflow.common.dto.ApiResponse;
+import com.growmighty.taskflow.domain.activity.ActivityType;
+import com.growmighty.taskflow.domain.activity.aspect.LogActivity;
 import com.growmighty.taskflow.domain.auth.entity.User;
 import com.growmighty.taskflow.domain.task.dto.TaskRequest;
 import com.growmighty.taskflow.domain.task.dto.TaskResponse;
@@ -25,6 +27,7 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    @LogActivity(type = ActivityType.TASK_CREATED, targetIdExpression = "#result.body.data.id")
     @PostMapping
     public ResponseEntity<ApiResponse<TaskResponse>> createTask(
             @Valid @RequestBody TaskRequest request,
@@ -59,6 +62,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success("Task를 조회했습니다.", response));
     }
 
+    @LogActivity(type = ActivityType.TASK_UPDATED, targetIdExpression = "#result.body.data.id")
     @PutMapping("/{taskId}")
     public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
             @PathVariable Long taskId,
@@ -70,16 +74,18 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success("Task가 수정되었습니다.", response));
     }
 
+    @LogActivity(type = ActivityType.TASK_DELETED, targetIdExpression = "#result.body.data")
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<ApiResponse<Void>> deleteTask(
+    public ResponseEntity<ApiResponse<Long>> deleteTask(
             @PathVariable Long taskId,
             @AuthenticationPrincipal User user
     ) {
         log.debug("Task 삭제 요청: taskId={}", taskId);
         taskService.deleteTask(taskId, user.getId());
-        return ResponseEntity.ok(ApiResponse.success("Task가 삭제되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("Task가 삭제되었습니다.", taskId));
     }
 
+    @LogActivity(type = ActivityType.TASK_STATUS_CHANGED, targetIdExpression = "#result.body.data.id")
     @PatchMapping("/{taskId}/status")
     public ResponseEntity<ApiResponse<TaskResponse>> updateTaskStatus(
             @PathVariable Long taskId,
