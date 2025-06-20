@@ -74,7 +74,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success("Task가 수정되었습니다.", response));
     }
 
-    @LogActivity(type = ActivityType.TASK_DELETED, targetIdExpression = "#result.body.data")
+    @LogActivity(type = ActivityType.TASK_DELETED, targetIdExpression = "#args[0]")
     @DeleteMapping("/{taskId}")
     public ResponseEntity<ApiResponse<Long>> deleteTask(
             @PathVariable Long taskId,
@@ -82,7 +82,7 @@ public class TaskController {
     ) {
         log.debug("Task 삭제 요청: taskId={}", taskId);
         taskService.deleteTask(taskId, user.getId());
-        return ResponseEntity.ok(ApiResponse.success("Task가 삭제되었습니다.", taskId));
+        return ResponseEntity.ok(ApiResponse.success("Task가 삭제되었습니다.", null));
     }
 
     @LogActivity(type = ActivityType.TASK_STATUS_CHANGED, targetIdExpression = "#result.body.data.id")

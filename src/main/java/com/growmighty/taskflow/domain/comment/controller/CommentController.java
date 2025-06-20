@@ -62,7 +62,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success("댓글이 수정되었습니다.", response));
     }
 
-    @LogActivity(type = ActivityType.COMMENT_DELETED, targetIdExpression = "#result.body.data")
+    @LogActivity(type = ActivityType.COMMENT_DELETED, targetIdExpression = "#args[1]")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiResponse<Long>> deleteComment(
             @PathVariable Long taskId,
@@ -71,6 +71,6 @@ public class CommentController {
     ) {
         log.debug("댓글 삭제 요청: taskId={}, commentId={}", taskId, commentId);
         commentService.deleteComment(taskId, commentId, user.getId());
-        return ResponseEntity.ok(ApiResponse.success("댓글이 삭제되었습니다.", commentId));
+        return ResponseEntity.ok(ApiResponse.success("댓글이 삭제되었습니다.", null));
     }
 } 
