@@ -76,7 +76,7 @@ public class TaskService {
             assignee = userService.getUserById(request.getAssigneeId());
         }
 
-        task.update(
+        task.updateDetails(
                 request.getTitle(),
                 request.getDescription(),
                 request.getPriority(),
@@ -85,7 +85,7 @@ public class TaskService {
         );
 
         if (request.getStatus() != null && request.getStatus() != task.getStatus()) {
-            task.updateStatus(request.getStatus());
+            task.changeStatus(request.getStatus());
         }
 
         log.debug("Task 수정: {}", task.getTitle());
@@ -102,7 +102,7 @@ public class TaskService {
     @Transactional
     public TaskResponse updateTaskStatus(Long taskId, TaskStatusRequest request) {
         Task task = getTaskById(taskId);
-        task.updateStatus(request.getStatus());
+        task.changeStatus(request.getStatus());
         log.debug("Task 상태 업데이트: {} -> {}", task.getTitle(), request.getStatus());
         
         return TaskResponse.from(task);

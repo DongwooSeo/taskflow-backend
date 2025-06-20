@@ -59,8 +59,8 @@ public class Task extends BaseEntity {
         return task;
     }
 
-    public void update(String title, String description, Priority priority, 
-                      User assignee, LocalDateTime dueDate) {
+    public void updateDetails(String title, String description, Priority priority,
+                              User assignee, LocalDateTime dueDate) {
         this.title = title;
         this.description = description;
         this.priority = priority;
@@ -68,7 +68,7 @@ public class Task extends BaseEntity {
         this.dueDate = dueDate;
     }
 
-    public void updateStatus(Status newStatus) {
+    public void changeStatus(Status newStatus) {
         if (this.status != newStatus) {
             if (newStatus == Status.IN_PROGRESS && this.startedAt == null) {
                 this.startedAt = LocalDateTime.now();
